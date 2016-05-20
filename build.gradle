@@ -1,9 +1,13 @@
 plugins {
 	id 'groovy'
 	id 'eclipse'
+	id 'application'
 }
 
 sourceCompatibility = 1.8
+
+mainClassName = "org.gameoflife.Application"
+applicationName = "gameOfLife"
 
 repositories { mavenCentral() }
 
@@ -15,12 +19,7 @@ dependencies {
 }
 
 test {
-	filter { includeTestsMatching "*UnitSpec" }
-}
-
-task integrationTest(type: Test) {
-	filter { includeTestsMatching "*IntegrationSpec" }
-	dependsOn test
+	filter { includeTestsMatching "*Spec" }
 }
 
 jar {

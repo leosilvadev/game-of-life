@@ -17,6 +17,19 @@
         </style>
     </head>
     <body ng-controller="MainCtrl">
+        <div>
+            <label>From:</label>
+            <input ng-model="startWith" type="number">
+            <label>To:</label>
+            <input ng-model="endWith" type="number">
+        </div>
+        <div>
+            <input ng-model="points">
+        </div>
+        <div>
+            <button ng-click="start()" ng-disable="started">Start!</button>
+            <button ng-click="stop()" ng-disable="!started">Stop!</button>
+        </div>
         <table>
             <tr ng-repeat="row in rows">
                 <td ng-repeat="column in row">
@@ -27,17 +40,29 @@
         <script>
             (function(){
                 angular.module('main', []).controller('MainCtrl', function($scope, $interval, $http){
-                    $interval(function(){
-                        $http.get('http://localhost:9000/v1/games').then(function(res){
-                            $scope.rows = res.data.rows;
+                    var timer;
+                    $scope.startWith = 40;
+                    $scope.endWith = 40;
+                    $scope.points = '3,4-4,5-5,3-5,4-5,5';
+                    $scope.started = false;
+                    $scope.start = function(){
+                        var initialPoints = $scope.points.split('-').map(function(it){
+                            var point = it.split(',');
+                            return {x:point[0], y:point[1] }
                         });
-                    }, 100);
+                        var config = {x:$scope.startWith, y:$scope.endWith};
+                        var data = {initialPoints:initialPoints, config:config};
+                        $http.post('http://localhost:9000/v1/games', data);
+                        $scope.started = true;
+                        $interval(function(){
+                            timer = $http.get('http://localhost:9000/v1/games').then(function(res){
+                                $scope.rows = res.data.rows;
+                            });
+                        }, 100);
+                    }
                 });
             })();
 
-            // setInterval(function(){
-            //     $.get('http://localhost:9000/v1/games')
-            // }, 1000);
         </script>
     </body>
 </html>

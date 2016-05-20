@@ -20,6 +20,7 @@ class GameController {
 	
 	@RequestMapping(method=RequestMethod.POST)
 	def start(@Valid @RequestBody Game game){
+		map = [:]
 		gameOfLife.start(game.config, game.initialPoints) { Citizen[][] rows ->
 			def res = [rows:[]]
 			rows.eachWithIndex { columns, rowInde ->
