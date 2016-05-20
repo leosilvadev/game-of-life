@@ -30,7 +30,7 @@ class GameOfLife {
 	
 	def startGame(Citizen[][] map, Closure notify){
 		int i =0
-		while(i<40) {
+		while ( true ) {
 			def toToggle = []
 			for ( int rowIndex = 0 ; rowIndex < map.size() ; rowIndex++ ) {
 				def row = map[rowIndex]

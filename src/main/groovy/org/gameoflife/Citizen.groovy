@@ -9,18 +9,20 @@ class Citizen {
 	Boolean alive
 	Tuple2 position
 	
-	Citizen(int x, int y, Boolean alive=false){
+	Citizen(int x, int y, Boolean alive=false, List<Citizen> neighbours=[]){
 		this.alive = alive
-		this.neighbours = []
+		this.neighbours = neighbours
 		this.position = new Tuple2(x, y)
 	}
 	
-	void live(){
+	Citizen live(){
 		this.alive = true
+		this
 	}
 	
-	void die(){
+	Citizen die(){
 		this.alive = false
+		this
 	}
 	
 	Boolean isAlive(){
@@ -60,9 +62,5 @@ class Citizen {
 	void toggleLife(){
 		this.alive = !isAlive() 
 	}
-	
-//	String toString() {
-//		isAlive() ? '[x]' : '[ ]'
-//	}
 	
 }
