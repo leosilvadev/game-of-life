@@ -23,5 +23,8 @@
     "ng-tags-input": "^3.0.0",
     "flat-ui": "^2.3.0",
     "angular-notify": "^2.5.0"
-  }
+  },
+  "resolutions": {
+	  "angular": "1.5.5"
+	}
 }
