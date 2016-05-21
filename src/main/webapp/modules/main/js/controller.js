@@ -36,6 +36,7 @@
         }
 
         var buildMap = function(){
+            vm.points = [];
             vm.rows = [];
             for ( var y=0 ; y<vm.yAxis ; y++ ) {
                 var columns = [];
