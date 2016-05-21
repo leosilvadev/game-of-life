@@ -13,7 +13,7 @@ https://leosilvadev-gameoflife.herokuapp.com/
 ./gradlew run
 ```
 
-Go to <a href="http://localhost:9000">http://localhost:9000</a> and click on Start!
+Go to http://localhost:9000 and click on Start!
 
 ### For Tests
 ```groovy
