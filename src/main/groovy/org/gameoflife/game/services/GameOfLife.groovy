@@ -1,20 +1,23 @@
 package org.gameoflife.game.services
 
-import org.gameoflife.Citizen
+import org.gameoflife.game.domains.Citizen;
+import org.gameoflife.game.domains.Game
 import org.gameoflife.game.domains.Game.Coordinates
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
 
 @Component
 class GameOfLife {
 	
-	def start(Coordinates config, List<Coordinates> points, Closure notify){
-		Citizen[][] map = new Citizen[config.x][config.y] 
+	@Async
+	void start(Game game, Closure notify, Closure onFinish){
+		Citizen[][] map = new Citizen[game.config.y][game.config.x] 
 		
-		map = init(map)
-		map = linkCitizens(map)
-		map = bootstrap(map, points)
+		init(map)
+		linkCitizens(map)
+		bootstrap(map, game.initialPoints)
 		
-		startGame(map, notify)
+		startGame(map, game.cicles, game.delay, notify, onFinish)
 	}
 	
 	def init(map){
@@ -23,12 +26,10 @@ class GameOfLife {
 				item[indexY] = new Citizen(indexX, indexY)
 			}
 		}
-		map
 	}
 	
-	def startGame(Citizen[][] map, Closure notify){
-		int i =0
-		while ( true ) {
+	def startGame(Citizen[][] map, Integer cicles, Long delay, Closure notify, Closure onFinish){
+		0.upto(cicles) {
 			def toToggle = []
 			for ( int rowIndex = 0 ; rowIndex < map.size() ; rowIndex++ ) {
 				def row = map[rowIndex]
@@ -39,11 +40,11 @@ class GameOfLife {
 					}
 				}
 			}
-			toToggle.each { Citizen citizen -> citizen.toggleLife() }
 			notify(map)
-			i++
-			Thread.sleep(500)
+			toToggle.each { Citizen citizen -> citizen.toggleLife() }
+			sleep(delay)
 		}
+		onFinish()
 	}
 	
 	def isFirstColumn(column) {
@@ -58,7 +59,7 @@ class GameOfLife {
 		column == citizens.size() -1
 	}
 	
-	def linkCitizens(Citizen[][] map){
+	void linkCitizens(Citizen[][] map){
 		map.eachWithIndex { citizens, row ->
 			if ( row == 0 ) {
 				citizens.eachWithIndex { Citizen citizen, column ->
@@ -117,15 +118,13 @@ class GameOfLife {
 				}
 			}
 		}
-		map
 	}
 	
 	def bootstrap(Citizen[][] map, List<Coordinates> points) {
-		def result = map.clone()
-		points.each { 
-			result[it.x-1][it.y-1].live()
+		points.each { point ->
+			def citizen = map[point.y][point.x]
+			citizen.live()
 		}
-		result
 	}
 
 }

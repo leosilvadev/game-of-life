@@ -1,68 +1,82 @@
 <html ng-app="main">
     <head>
-        <script src="https://code.jquery.com/jquery-2.2.4.min.js"   integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="   crossorigin="anonymous"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
-        <style>
-            .alive {
-                background-color: blue;
-            }
-            .dead {
-                background-color: red;
-            }
-
-            .citizen {
-                width: 10px;
-                height: 10px;
-            }
-        </style>
+        <link href="libs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="libs/flat-ui/dist/css/flat-ui.min.css" rel="stylesheet">
+        <link href="libs/ng-tags-input/ng-tags-input.min.css" rel="stylesheet">
+        <link href="libs/ng-tags-input/ng-tags-input.bootstrap.min.css" rel="stylesheet">
+        <link href="modules/main/css/main.css" rel="stylesheet">
     </head>
-    <body ng-controller="MainCtrl">
-        <div>
-            <label>From:</label>
-            <input ng-model="startWith" type="number">
-            <label>To:</label>
-            <input ng-model="endWith" type="number">
-        </div>
-        <div>
-            <input ng-model="points">
-        </div>
-        <div>
-            <button ng-click="start()" ng-disable="started">Start!</button>
-            <button ng-click="stop()" ng-disable="!started">Stop!</button>
-        </div>
-        <table>
-            <tr ng-repeat="row in rows">
-                <td ng-repeat="column in row">
-                    <div class="citizen" ng-class="{alive: column.alive, dead: !column.alive}"></div>
-                </td>
-            </tr>
-        </table>
-        <script>
-            (function(){
-                angular.module('main', []).controller('MainCtrl', function($scope, $interval, $http){
-                    var timer;
-                    $scope.startWith = 40;
-                    $scope.endWith = 40;
-                    $scope.points = '3,4-4,5-5,3-5,4-5,5';
-                    $scope.started = false;
-                    $scope.start = function(){
-                        var initialPoints = $scope.points.split('-').map(function(it){
-                            var point = it.split(',');
-                            return {x:point[0], y:point[1] }
-                        });
-                        var config = {x:$scope.startWith, y:$scope.endWith};
-                        var data = {initialPoints:initialPoints, config:config};
-                        $http.post('http://localhost:9000/v1/games', data);
-                        $scope.started = true;
-                        $interval(function(){
-                            timer = $http.get('http://localhost:9000/v1/games').then(function(res){
-                                $scope.rows = res.data.rows;
-                            });
-                        }, 100);
-                    }
-                });
-            })();
+    <body>
+        <div class="container" ng-controller="MainCtrl as vm" ng-init="vm.init()">
+            <div class="well">
+                <div class="row">
+                    <div class="col-sm-8">
+                        <label for="points">Pointers:</label>
+                        <span class="tip">Specify the pointer in pattern: y,x-y,x-y,x-y,x...</span>
+                        <tags-input id="initialPoints" ng-model="vm.points" placeholder="Insert a y-x point"
+                            allowed-tags-pattern="\d-\d" ng-disabled="vm.started"></tags-input>
+                    </div>
+                    <div class="col-sm-2">
+                        <label for="yAxis">Y axis:</label>
+                        <span class="tip">Max of Y</span>
+                        <input id="yAxis" ng-model="vm.yAxis" ng-change="vm.buildMap()" type="number" class="form-control">
+                    </div>
 
-        </script>
+                    <div class="col-sm-2">
+                        <label for="xAxis">X axis:</label>
+                        <span class="tip">Max of X</span>
+                        <input id="xAxis" ng-model="vm.xAxis" ng-change="vm.buildMap()" type="number" class="form-control">
+                    </div>
+                    <div class="col-sm-2">
+                        <label for="cicles">Cicles:</label>
+                        <span class="tip">How many times?</span>
+                        <input id="cicles" ng-model="vm.cicles" type="number" class="form-control">
+                    </div>
+                    <div class="col-sm-2">
+                        <label for="delay">Delay:</label>
+                        <span class="tip">In milliseconds</span>
+                        <input id="delay" ng-model="vm.delay" type="number" class="form-control">
+                    </div>
+
+                    <div class="col-sm-2 buttons-container" ng-hide="vm.started">
+                        <button ng-click="vm.cleanPoints()" class="btn btn-info">
+                            <span class="glyphicon glyphicon-erase"></span> Clean
+                        </button>
+                    </div>
+                    <div class="col-sm-2 buttons-container" ng-hide="vm.started">
+                        <button ng-click="vm.start()" class="btn btn-primary">
+                            <span class="fui-play"></span> Start
+                        </button>
+                    </div>
+                    <div class="col-sm-4 buttons-container" ng-show="vm.started">
+                        <button ng-click="vm.stop()" class="btn btn-warning">
+                            <span class="fui-cross"></span> Stop
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div >
+                <table align="center" ng-mousedown="vm.startMultSelect()" ng-mouseup="vm.stopMultSelect()">
+                    <tr ng-repeat="row in vm.rows track by $index">
+                        <td ng-repeat="column in row track by $index">
+                            <div class="citizen" ng-class="{alive: column.alive, dead: !column.alive}"
+                                ng-click="vm.point(column)" ng-mouseover="vm.multSelect(column)">
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <script src="libs/jquery/dist/jquery.min.js"></script>
+        <script src="libs/sockjs/sockjs.min.js"></script>
+        <script src="libs/stomp-websocket/lib/stomp.min.js"></script>
+
+        <script src="libs/angular/angular.min.js"></script>
+        <script src="libs/ng-stomp/dist/ng-stomp.min.js"></script>
+        <script src="libs/ng-tags-input/ng-tags-input.min.js"></script>
+        <script src="modules/main/js/module.js"></script>
+        <script src="modules/main/js/gameoflife.js"></script>
+        <script src="modules/main/js/controller.js"></script>
+        <script src="modules/main/js/gameclient.js"></script>
     </body>
 </html>

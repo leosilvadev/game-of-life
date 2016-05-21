@@ -1,4 +1,4 @@
-package org.gameoflife
+package org.gameoflife.game.domains
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 
@@ -61,6 +61,10 @@ class Citizen {
 	
 	void toggleLife(){
 		this.alive = !isAlive() 
+	}
+	
+	String toString() {
+		isAlive() ? '[x]' : '[ ]'
 	}
 	
 }

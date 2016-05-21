@@ -1,0 +1,46 @@
+.alive {
+    background-color: #7E7ECC;
+}
+.dead {
+    background-color: #EFECE3;
+}
+
+.citizen {
+    width: 25px;
+    height: 25px;
+    border: 1px solid #B3B3B3;
+    border-radius: 4px;
+    margin: 1px;
+}
+
+.btn {
+    margin-top: 25px;
+    width: 100%;
+}
+
+.tip {
+    font-size: 0.8em;
+    margin-left: 1px;
+    color: #737373;
+}
+
+.row {
+    margin-top: 10px;
+}
+
+.buttons-container {
+    margin-top: 13px;
+}
+
+#initialPoints {
+    height: 200px;
+}
+
+tags-input .tags .tag-item{
+    background-color: rgb(26, 188, 156);
+    border: 1px solid #1F9E85;
+}
+
+tags-input .tags .tag-item .remove-button {
+    color: #FFFFFF;
+}
