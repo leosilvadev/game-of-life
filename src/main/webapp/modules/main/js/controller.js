@@ -28,12 +28,10 @@
         }
 
         var stopMultSelect = function(){
-            console.log('stopMultSelect');
             multSelectEnabled = false;
         }
 
         var startMultSelect = function(){
-            console.log('startMultSelect');
             multSelectEnabled = true;
         }
 
@@ -135,15 +133,17 @@
         }
 
         var multSelect = function(point) {
-            var pointText = point.position[0]+'-'+point.position[1];
-            if(multSelectEnabled && point.dead) {
-                var found = vm.points.findIndex(function(it){
-                    return it.text == pointText;
-                });
-                if ( found<0 ) {
-                    point.alive = true;
-                    point.dead = false;
-                    vm.points.push({text: pointText});
+            if ( !vm.started ) {
+                var pointText = point.position[0]+'-'+point.position[1];
+                if(multSelectEnabled && point.dead) {
+                    var found = vm.points.findIndex(function(it){
+                        return it.text == pointText;
+                    });
+                    if ( found<0 ) {
+                        point.alive = true;
+                        point.dead = false;
+                        vm.points.push({text: pointText});
+                    }
                 }
             }
         }
