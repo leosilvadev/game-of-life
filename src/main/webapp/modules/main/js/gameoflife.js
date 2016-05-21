@@ -2,7 +2,7 @@
     angular.module('main').factory('gameoflife', Factory);
 
     function Factory($http, gameClient){
-        var URL = 'https://leosilvadev-gameoflife.herokuapp.com/v1/games/';
+        var URL = 'v1/games/';
         var subscription;
 
         var start = function(data, onMessage, onFinish){
