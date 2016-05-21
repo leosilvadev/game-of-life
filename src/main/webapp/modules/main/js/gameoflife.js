@@ -7,7 +7,7 @@
 
         var start = function(data, onMessage, onFinish){
             if ( !subscription ) {
-                $http.post(URL, data).then(function(result){
+                return $http.post(URL, data).then(function(result){
                     var gameToken = result.data.token;
                     gameClient.client.then(function(frame){
                         var queue = '/queue/playing-'+gameToken;
@@ -24,8 +24,10 @@
         }
 
         var stop = function(){
-            subscription.unsubscribe();
-            subscription = null;
+            if(subscription) {
+                subscription.unsubscribe();
+                subscription = null;
+            }
         }
 
         return {

@@ -44,3 +44,9 @@ tags-input .tags .tag-item{
 tags-input .tags .tag-item .remove-button {
     color: #FFFFFF;
 }
+
+.alert-warning{
+    color: #FFA726;
+    background-color: #FFF9C4;
+    border-color: #FFF176;
+}
