@@ -19,23 +19,27 @@
                     <div class="col-sm-2">
                         <label for="yAxis">Y axis:</label>
                         <span class="tip">Max of Y</span>
-                        <input id="yAxis" ng-model="vm.yAxis" ng-change="vm.buildMap()" type="number" class="form-control">
+                        <input id="yAxis" ng-model="vm.yAxis" ng-disabled="vm.started"
+                            ng-change="vm.buildMap()" type="number" class="form-control">
                     </div>
 
                     <div class="col-sm-2">
                         <label for="xAxis">X axis:</label>
                         <span class="tip">Max of X</span>
-                        <input id="xAxis" ng-model="vm.xAxis" ng-change="vm.buildMap()" type="number" class="form-control">
+                        <input id="xAxis" ng-model="vm.xAxis" ng-disabled="vm.started"
+                            ng-change="vm.buildMap()" type="number" class="form-control">
                     </div>
                     <div class="col-sm-2">
                         <label for="cicles">Cicles:</label>
                         <span class="tip">How many times?</span>
-                        <input id="cicles" ng-model="vm.cicles" type="number" class="form-control">
+                        <input id="cicles" ng-model="vm.cicles" ng-disabled="vm.started"
+                            type="number" class="form-control">
                     </div>
                     <div class="col-sm-2">
                         <label for="delay">Delay:</label>
                         <span class="tip">In milliseconds</span>
-                        <input id="delay" ng-model="vm.delay" type="number" class="form-control">
+                        <input id="delay" ng-model="vm.delay" ng-disabled="vm.started"
+                            type="number" class="form-control">
                     </div>
 
                     <div class="col-sm-2 buttons-container" ng-hide="vm.started">
