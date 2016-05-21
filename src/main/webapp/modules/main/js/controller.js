@@ -3,11 +3,12 @@
 
     function Controller($scope, gameoflife){
         var vm = this;
+        var multSelectEnabled = false;
 
         vm.init = function(){
             vm.xAxis = 40;
             vm.yAxis = 40;
-            vm.cicles = 10;
+            vm.cicles = 100;
             vm.delay = 200;
             vm.started = false;
             vm.points = [];
@@ -21,6 +22,19 @@
             vm.point = point;
             vm.buildMap = buildMap;
             vm.cleanPoints = cleanPoints;
+            vm.multSelect = multSelect;
+            vm.startMultSelect = startMultSelect;
+            vm.stopMultSelect = stopMultSelect;
+        }
+
+        var stopMultSelect = function(){
+            console.log('stopMultSelect');
+            multSelectEnabled = false;
+        }
+
+        var startMultSelect = function(){
+            console.log('startMultSelect');
+            multSelectEnabled = true;
         }
 
         var buildMap = function(){
@@ -117,6 +131,20 @@
                 vm.started = true;
             } catch(ex) {
                 alert(ex.message);
+            }
+        }
+
+        var multSelect = function(point) {
+            var pointText = point.position[0]+'-'+point.position[1];
+            if(multSelectEnabled && point.dead) {
+                var found = vm.points.findIndex(function(it){
+                    return it.text == pointText;
+                });
+                if ( found<0 ) {
+                    point.alive = true;
+                    point.dead = false;
+                    vm.points.push({text: pointText});
+                }
             }
         }
 

@@ -10,14 +10,21 @@
         <div class="container" ng-controller="MainCtrl as vm" ng-init="vm.init()">
             <div class="well">
                 <div class="row">
-                    <div class="col-sm-4">
+                    <div class="col-sm-8">
+                        <label for="points">Pointers:</label>
+                        <span class="tip">Specify the pointer in pattern: y,x-y,x-y,x-y,x...</span>
+                        <tags-input id="initialPoints" ng-model="vm.points" placeholder="Insert a y-x point"
+                            allowed-tags-pattern="\d-\d" ng-disabled="vm.started"></tags-input>
+                    </div>
+                    <div class="col-sm-2">
                         <label for="yAxis">Y axis:</label>
-                        <span class="tip">Max of Y axis used</span>
+                        <span class="tip">Max of Y</span>
                         <input id="yAxis" ng-model="vm.yAxis" ng-change="vm.buildMap()" type="number" class="form-control">
                     </div>
-                    <div class="col-sm-4">
+
+                    <div class="col-sm-2">
                         <label for="xAxis">X axis:</label>
-                        <span class="tip">Max of X axis used</span>
+                        <span class="tip">Max of X</span>
                         <input id="xAxis" ng-model="vm.xAxis" ng-change="vm.buildMap()" type="number" class="form-control">
                     </div>
                     <div class="col-sm-2">
@@ -30,14 +37,7 @@
                         <span class="tip">In milliseconds</span>
                         <input id="delay" ng-model="vm.delay" type="number" class="form-control">
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-8">
-                        <label for="points">Pointers:</label>
-                        <span class="tip">Specify the pointer in pattern: y,x-y,x-y,x-y,x...</span>
-                        <tags-input id="initialPoints" ng-model="vm.points" placeholder="Insert a y-x point"
-                            allowed-tags-pattern="\d-\d" ng-disabled="vm.started"></tags-input>
-                    </div>
+
                     <div class="col-sm-2 buttons-container" ng-hide="vm.started">
                         <button ng-click="vm.cleanPoints()" class="btn btn-info">
                             <span class="glyphicon glyphicon-erase"></span> Clean
@@ -56,11 +56,11 @@
                 </div>
             </div>
             <div >
-                <table align="center">
+                <table align="center" ng-mousedown="vm.startMultSelect()" ng-mouseup="vm.stopMultSelect()">
                     <tr ng-repeat="row in vm.rows track by $index">
                         <td ng-repeat="column in row track by $index">
                             <div class="citizen" ng-class="{alive: column.alive, dead: !column.alive}"
-                                ng-click="vm.point(column)">
+                                ng-click="vm.point(column)" ng-mouseover="vm.multSelect(column)">
                             </div>
                         </td>
                     </tr>

@@ -29,3 +29,5 @@ jar {
 		'Implementation-Version': version
 	}
 }
+
+task stage(dependsOn: ['clean', 'installApp'])

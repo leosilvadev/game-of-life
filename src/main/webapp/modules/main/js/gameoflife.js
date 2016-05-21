@@ -1,7 +1,7 @@
 (function(angular){
     angular.module('main').factory('gameoflife', Factory);
 
-    function Factory($interval, $http, gameClient){
+    function Factory($http, gameClient){
         var URL = 'http://localhost:9000/v1/games/';
         var subscription;
 
