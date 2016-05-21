@@ -10,7 +10,18 @@ import org.springframework.scheduling.annotation.EnableAsync
 class Application {
 	
 	static main(args){
-		SpringApplication.run(Application, args)
+		configurePort {
+			SpringApplication.run(Application, args)
+		}
+	}
+	
+	static configurePort(Closure run) {
+		if ( System.getenv().PORT ) {
+			String webPort = System.getenv().PORT
+			System.setProperty("server.port", webPort)
+			
+		}
+		run()
 	}
 
 }
