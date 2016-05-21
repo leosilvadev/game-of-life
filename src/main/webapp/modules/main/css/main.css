@@ -13,10 +13,6 @@
     margin: 1px;
 }
 
-table {
-    width: 100%;
-}
-
 .btn {
     margin-top: 25px;
     width: 100%;
@@ -34,4 +30,17 @@ table {
 
 .buttons-container {
     margin-top: 13px;
+}
+
+#initialPoints {
+    height: 30px !important;
+}
+
+tags-input .tags .tag-item{
+    background-color: rgb(26, 188, 156);
+    border: 1px solid #1F9E85;
+}
+
+tags-input .tags .tag-item .remove-button {
+    color: #FFFFFF;
 }

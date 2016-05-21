@@ -1,6 +1,6 @@
 package org.gameoflife.game.services
 
-import org.gameoflife.Citizen
+import org.gameoflife.game.domains.Citizen;
 import org.gameoflife.game.domains.Game
 import org.gameoflife.game.domains.Game.Coordinates
 import org.springframework.scheduling.annotation.Async
@@ -10,14 +10,14 @@ import org.springframework.stereotype.Component
 class GameOfLife {
 	
 	@Async
-	void start(Game game, Closure notify){
+	void start(Game game, Closure notify, Closure onFinish){
 		Citizen[][] map = new Citizen[game.config.y][game.config.x] 
 		
 		init(map)
 		linkCitizens(map)
 		bootstrap(map, game.initialPoints)
 		
-		startGame(map, game.cicles, game.delay, notify)
+		startGame(map, game.cicles, game.delay, notify, onFinish)
 	}
 	
 	def init(map){
@@ -28,7 +28,7 @@ class GameOfLife {
 		}
 	}
 	
-	def startGame(Citizen[][] map, Integer cicles, Long delay, Closure notify){
+	def startGame(Citizen[][] map, Integer cicles, Long delay, Closure notify, Closure onFinish){
 		0.upto(cicles) {
 			def toToggle = []
 			for ( int rowIndex = 0 ; rowIndex < map.size() ; rowIndex++ ) {
@@ -44,6 +44,7 @@ class GameOfLife {
 			toToggle.each { Citizen citizen -> citizen.toggleLife() }
 			sleep(delay)
 		}
+		onFinish()
 	}
 	
 	def isFirstColumn(column) {

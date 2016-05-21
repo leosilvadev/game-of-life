@@ -1,3 +1,3 @@
 (function(angular){
-    angular.module('main', []);
+    angular.module('main', ['ngStomp', 'ngTagsInput']);
 })(angular);

@@ -1,40 +1,36 @@
 (function(angular){
     angular.module('main').factory('gameoflife', Factory);
 
-    function Factory($interval, $http){
-        var TIMEOUT_DELAY = 200;
+    function Factory($interval, $http, gameClient){
         var URL = 'http://localhost:9000/v1/games/';
-        var timer;
+        var subscription;
 
-        var cancelTimer = function(){
-            if ( timer ) $interval.cancel(timer);
+        var start = function(data, onMessage, onFinish){
+            if ( !subscription ) {
+                $http.post(URL, data).then(function(result){
+                    var gameToken = result.data.token;
+                    gameClient.client.then(function(frame){
+                        var queue = '/queue/playing-'+gameToken;
+                        subscription = gameClient.stomp.subscribe(queue, function(data){
+                            if ( data.status == 'RUNNING' ) {
+                                onMessage(data.rows);
+                            } else {
+                                onFinish();
+                            }
+                        });
+                    })
+                });
+            }
         }
 
-        var checkUpdates = function(gameToken, onMessage, onFailure){
-            return function(){
-                $http.get(URL + gameToken)
-                    .then(function(res){
-                        onMessage(res.data.data.rows);
-                    })
-                    .catch(function(res){
-                        if ( res.status == 404 ) {
-                            cancelTimer();
-                            onFailure();
-                        }
-                    });
-            }
-        };
-
-        var start = function(data, onMessage, onFailure){
-            $http.post(URL, data).then(function(result){
-                var gameToken = result.data.token;
-                timer = $interval(checkUpdates(gameToken, onMessage, onFailure), TIMEOUT_DELAY);
-            });
+        var stop = function(){
+            subscription.unsubscribe();
+            subscription = null;
         }
 
         return {
             start: start,
-            stop: cancelTimer
+            stop: stop
         };
     }
 

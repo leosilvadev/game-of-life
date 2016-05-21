@@ -1,7 +1,5 @@
 package org.gameoflife.game.domains
 
-import org.gameoflife.Citizen
-
 import spock.lang.Specification
 
 class CitizenSpec extends Specification {

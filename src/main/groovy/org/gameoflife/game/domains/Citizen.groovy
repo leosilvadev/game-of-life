@@ -1,4 +1,4 @@
-package org.gameoflife
+package org.gameoflife.game.domains
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 
