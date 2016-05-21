@@ -1,8 +1,8 @@
 package org.gameoflife.game.services
 
-import org.gameoflife.game.domains.Citizen;
+import org.gameoflife.game.domains.Citizen
 import org.gameoflife.game.domains.Game
-import org.gameoflife.game.domains.Game.Coordinates
+import org.gameoflife.game.flow.Flow
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
 
@@ -10,29 +10,29 @@ import org.springframework.stereotype.Component
 class GameOfLife {
 	
 	@Async
-	void start(Game game, Closure notify, Closure onFinish){
+	void start(Game game, Closure notify, Closure finish){
 		Citizen[][] map = new Citizen[game.config.y][game.config.x] 
 		
-		init(map)
-		linkCitizens(map)
-		bootstrap(map, game.initialPoints)
+		def recoveryFn = { ex -> finish() }
+		def inputData = [map:map, points:game.initialPoints, cicles:game.cicles, delay:game.delay, notify:notify]
 		
-		startGame(map, game.cicles, game.delay, notify, onFinish)
+		Flow.waterfall([init, linkCitizens, bootstrap, startGame, finish], recoveryFn, inputData)
 	}
 	
-	def init(map){
-		map.eachWithIndex { item, indexX ->
+	def init = { data ->
+		data.map.eachWithIndex { item, indexX ->
 			item.eachWithIndex { citizen, indexY ->
 				item[indexY] = new Citizen(indexX, indexY)
 			}
 		}
+		data
 	}
 	
-	def startGame(Citizen[][] map, Integer cicles, Long delay, Closure notify, Closure onFinish){
-		0.upto(cicles) {
+	def startGame = { data ->
+		0.upto(data.cicles) {
 			def toToggle = []
-			for ( int rowIndex = 0 ; rowIndex < map.size() ; rowIndex++ ) {
-				def row = map[rowIndex]
+			for ( int rowIndex = 0 ; rowIndex < data.map.size() ; rowIndex++ ) {
+				def row = data.map[rowIndex]
 				for ( int colIndex = 0 ; colIndex < row.size() ; colIndex++ ) {
 					def citizen = row[colIndex]
 					if ( citizen.mustToggle() ) {
@@ -40,11 +40,11 @@ class GameOfLife {
 					}
 				}
 			}
-			notify(map)
+			data.notify(data.map)
 			toToggle.each { Citizen citizen -> citizen.toggleLife() }
-			sleep(delay)
+			sleep(data.delay)
 		}
-		onFinish()
+		data
 	}
 	
 	def isFirstColumn(column) {
@@ -59,7 +59,8 @@ class GameOfLife {
 		column == citizens.size() -1
 	}
 	
-	void linkCitizens(Citizen[][] map){
+	def linkCitizens = { data ->
+		def map = data.map
 		map.eachWithIndex { citizens, row ->
 			if ( row == 0 ) {
 				citizens.eachWithIndex { Citizen citizen, column ->
@@ -118,13 +119,15 @@ class GameOfLife {
 				}
 			}
 		}
+		data
 	}
 	
-	def bootstrap(Citizen[][] map, List<Coordinates> points) {
-		points.each { point ->
-			def citizen = map[point.y][point.x]
+	def bootstrap = { data ->
+		data.points.each { point ->
+			def citizen = data.map[point.y][point.x]
 			citizen.live()
 		}
+		data
 	}
 
 }

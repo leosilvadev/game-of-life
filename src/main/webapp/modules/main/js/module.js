@@ -1,3 +1,3 @@
 (function(angular){
-    angular.module('main', ['ngStomp', 'ngTagsInput']);
+    angular.module('main', ['ngStomp', 'ngTagsInput', 'cgNotify']);
 })(angular);

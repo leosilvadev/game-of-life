@@ -1,7 +1,7 @@
 (function(angular){
     angular.module('main').controller('MainCtrl', Controller);
 
-    function Controller($scope, gameoflife){
+    function Controller($scope, gameoflife, message){
         var vm = this;
         var multSelectEnabled = false;
 
@@ -125,10 +125,13 @@
         var start = function(){
             try {
                 var data = buildStartRequest();
-                gameoflife.start(data, updateRows, stop);
+                gameoflife.start(data, updateRows, stop).catch(function(response){
+                    message.warn('Error trying to start the Game, check the configuration and try again!')
+                    stop();
+                });
                 vm.started = true;
             } catch(ex) {
-                alert(ex.message);
+                message.warn(ex.message)
             }
         }
 
