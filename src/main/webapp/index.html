@@ -1,6 +1,7 @@
 <html ng-app="main">
     <head>
         <link href="libs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="libs/flat-ui/dist/css/flat-ui.min.css" rel="stylesheet">
         <link href="modules/main/css/main.css" rel="stylesheet">
     </head>
     <body>
@@ -34,9 +35,13 @@
                         <span class="tip">Specify the pointer in pattern: y,x-y,x-y,x-y,x...</span>
                         <input id="points" ng-model="vm.points" class="form-control">
                     </div>
-                    <div class="col-sm-4">
-                        <button ng-click="vm.start()" ng-hide="started" class="btn btn-primary">Start</button>
-                        <button ng-click="vm.stop()" ng-show="started" class="btn btn-warning">Pause</button>
+                    <div class="col-sm-4 buttons-container">
+                        <button ng-click="vm.start()" ng-hide="vm.started" class="btn btn-primary">
+                            <span class="fui-play"></span> Start
+                        </button>
+                        <button ng-click="vm.stop()" ng-show="vm.started" class="btn btn-warning">
+                            <span class="fui-cross"></span> Stop
+                        </button>
                     </div>
                 </div>
             </div>
@@ -51,6 +56,7 @@
         <script src="libs/jquery/dist/jquery.min.js"></script>
         <script src="libs/angular/angular.min.js"></script>
         <script src="modules/main/js/module.js"></script>
+        <script src="modules/main/js/gameoflife.js"></script>
         <script src="modules/main/js/controller.js"></script>
     </body>
 </html>

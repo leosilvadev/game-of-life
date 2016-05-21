@@ -4,6 +4,8 @@
 .settings/
 build/
 bin/
+node_modules/
+libs/
 
 # Ignore Gradle GUI config
 gradle-app.setting
