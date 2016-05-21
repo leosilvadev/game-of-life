@@ -55,15 +55,17 @@
                     </div>
                 </div>
             </div>
-            <table>
-                <tr ng-repeat="row in vm.rows track by $index">
-                    <td ng-repeat="column in row track by $index">
-                        <div class="citizen" ng-class="{alive: column.alive, dead: !column.alive}"
-                            ng-click="vm.point(column)">
-                        </div>
-                    </td>
-                </tr>
-            </table>
+            <div >
+                <table align="center">
+                    <tr ng-repeat="row in vm.rows track by $index">
+                        <td ng-repeat="column in row track by $index">
+                            <div class="citizen" ng-class="{alive: column.alive, dead: !column.alive}"
+                                ng-click="vm.point(column)">
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
         </div>
         <script src="libs/jquery/dist/jquery.min.js"></script>
         <script src="libs/sockjs/sockjs.min.js"></script>

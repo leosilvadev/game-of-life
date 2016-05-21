@@ -46,7 +46,7 @@
                     var found = vm.points.findIndex(function(it){
                         return it.text == point
                     });
-                    vm.points.shift(found);
+                    vm.points.splice(found, 1);
                 }
             }
         }
