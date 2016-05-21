@@ -101,7 +101,6 @@
 
         var updateRows = function(rows){
             $scope.$apply(function(){
-                console.log(rows);
                 vm.rows = rows;
             });
         }
