@@ -1,9 +1,7 @@
 (function(angular){
     angular.module('main').controller('MainCtrl', Controller);
 
-    function Controller($interval, $http){
-        var interalTimer;
-        var gameToken;
+    function Controller(gameoflife){
         var vm = this;
 
         vm.init = function(){
@@ -22,11 +20,11 @@
         }
 
         var stop = function(){
-            $interval.cancel(interalTimer);
             vm.started = false;
+            gameoflife.stop();
         }
 
-        var start = function(){
+        var buildStartRequest = function(){
             var initialPoints = vm.points.split('-').map(function(it){
                 var point = it.split(',');
                 return {x:point[0], y:point[1] }
@@ -41,15 +39,15 @@
                 cicles: vm.cicles,
                 delay: vm.delay
             };
-            $http.post('http://localhost:9000/v1/games', data).then(function(result){
-                gameToken = result.data.token;
-                vm.started = true;
-                interalTimer = $interval(function(){
-                    timer = $http.get('http://localhost:9000/v1/games/'+gameToken).then(function(res){
-                        vm.rows = res.data.rows;
-                    });
-                }, 50);
-            });
+            return data;
+        }
+
+        var start = function(){
+            var data = buildStartRequest();
+            gameoflife.start(data, function(rows){
+                vm.rows = rows;
+            }, stop);
+            vm.started = true;
         }
     }
 
