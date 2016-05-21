@@ -63,4 +63,8 @@ class Citizen {
 		this.alive = !isAlive() 
 	}
 	
+	String toString() {
+		isAlive() ? '[x]' : '[ ]'
+	}
+	
 }

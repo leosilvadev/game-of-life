@@ -2,63 +2,129 @@
     <head>
         <script src="https://code.jquery.com/jquery-2.2.4.min.js"   integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="   crossorigin="anonymous"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
         <style>
             .alive {
-                background-color: blue;
+                background-color: #7E7ECC;
             }
             .dead {
-                background-color: red;
+                background-color: #EFECE3;
             }
 
             .citizen {
-                width: 10px;
-                height: 10px;
+                width: 25px;
+                height: 25px;
+                border: 1px solid #B3B3B3;
+                border-radius: 4px;
+                margin: 1px;
+            }
+
+            table {
+                width: 100%;
+            }
+
+            .btn {
+                margin-top: 25px;
+                width: 100%;
+            }
+
+            .tip {
+                font-size: 0.8em;
+                margin-left: 1px;
+                color: #737373;
+            }
+
+            .row {
+                margin-top: 10px;
             }
         </style>
     </head>
-    <body ng-controller="MainCtrl">
-        <div>
-            <label>From:</label>
-            <input ng-model="startWith" type="number">
-            <label>To:</label>
-            <input ng-model="endWith" type="number">
+    <body>
+        <div class="container" ng-controller="MainCtrl">
+            <div class="well">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label for="endWith">Y axis:</label>
+                        <span class="tip">Max of Y axis used</span>
+                        <input id="endWith" ng-model="endWith" type="number" class="form-control">
+                    </div>
+                    <div class="col-sm-4">
+                        <label for="startWith">X axis:</label>
+                        <span class="tip">Max of X axis used</span>
+                        <input id="startWith" ng-model="startWith" type="number" class="form-control">
+                    </div>
+                    <div class="col-sm-2">
+                        <label for="cicles">Cicles:</label>
+                        <span class="tip">How many times?</span>
+                        <input id="cicles" ng-model="cicles" type="number" class="form-control">
+                    </div>
+                    <div class="col-sm-2">
+                        <label for="delay">Delay:</label>
+                        <span class="tip">In milliseconds</span>
+                        <input id="delay" ng-model="delay" type="number" class="form-control">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-8">
+                        <label for="points">Pointers:</label>
+                        <span class="tip">Specify the pointer in pattern: y,x-y,x-y,x-y,x...</span>
+                        <input id="points" ng-model="points" class="form-control">
+                    </div>
+                    <div class="col-sm-4">
+                        <button ng-click="start()" ng-hide="started" class="btn btn-primary">Start</button>
+                        <button ng-click="stop()" ng-show="started" class="btn btn-warning">Pause</button>
+                    </div>
+                </div>
+            </div>
+            <table>
+                <tr ng-repeat="row in rows">
+                    <td ng-repeat="column in row">
+                        <div class="citizen" ng-class="{alive: column.alive, dead: !column.alive}"></div>
+                    </td>
+                </tr>
+            </table>
         </div>
-        <div>
-            <input ng-model="points">
-        </div>
-        <div>
-            <button ng-click="start()" ng-disable="started">Start!</button>
-            <button ng-click="stop()" ng-disable="!started">Stop!</button>
-        </div>
-        <table>
-            <tr ng-repeat="row in rows">
-                <td ng-repeat="column in row">
-                    <div class="citizen" ng-class="{alive: column.alive, dead: !column.alive}"></div>
-                </td>
-            </tr>
-        </table>
         <script>
             (function(){
                 angular.module('main', []).controller('MainCtrl', function($scope, $interval, $http){
-                    var timer;
+                    var interalTimer;
+                    var gameToken;
                     $scope.startWith = 40;
                     $scope.endWith = 40;
+                    $scope.cicles = 10;
+                    $scope.delay = 200;
                     $scope.points = '3,4-4,5-5,3-5,4-5,5';
                     $scope.started = false;
+
+                    $scope.stop = function(){
+                        $interval.cancel(interalTimer);
+                        $scope.started = false;
+                    }
+
                     $scope.start = function(){
                         var initialPoints = $scope.points.split('-').map(function(it){
                             var point = it.split(',');
                             return {x:point[0], y:point[1] }
                         });
-                        var config = {x:$scope.startWith, y:$scope.endWith};
-                        var data = {initialPoints:initialPoints, config:config};
-                        $http.post('http://localhost:9000/v1/games', data);
-                        $scope.started = true;
-                        $interval(function(){
-                            timer = $http.get('http://localhost:9000/v1/games').then(function(res){
-                                $scope.rows = res.data.rows;
-                            });
-                        }, 100);
+                        var config = {
+                            x: $scope.startWith,
+                            y: $scope.endWith
+                        };
+                        var data = {
+                            initialPoints: initialPoints,
+                            config: config,
+                            cicles: $scope.cicles,
+                            delay: $scope.delay
+                        };
+                        $http.post('http://localhost:9000/v1/games', data).then(function(result){
+                            gameToken = result.data.token;
+                            $scope.started = true;
+                            interalTimer = $interval(function(){
+                                timer = $http.get('http://localhost:9000/v1/games/'+gameToken).then(function(res){
+                                    $scope.rows = res.data.rows;
+                                });
+                            }, 50);
+                        });
                     }
                 });
             })();

@@ -7,6 +7,12 @@ import org.hibernate.validator.constraints.NotEmpty
 
 class Game {
 	
+	@NotNull @Min(1l)
+	Integer cicles
+	
+	@NotNull @Min(10l)
+	Long delay
+	
 	@NotNull
 	Coordinates config
 	
