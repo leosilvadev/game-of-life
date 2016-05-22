@@ -13,24 +13,23 @@ class GameOfLife {
 	
 	@Async
 	void start(Game game, Closure notify, Closure finish){
-		City city = new City(game.config.y, game.config.x) 
+		City city = new City(game.config.y, game.config.x, game.firstCitizens) 
 		
 		def recoveryFn = { ex -> 
-			ex.printStackTrace()
 			finish()
 		}
-		def inputData = [city:city, points:game.initialPoints, cicles:game.cicles, delay:game.delay, notify:notify]
+		def inputData = [city:city, cicles:game.cicles, delay:game.delay, notify:notify]
 		
-		Flow.waterfall([link, bootstrap, start, finish], recoveryFn, inputData)
+		Flow.waterfall([link, start, finish], recoveryFn, inputData)
 	}
 	
 	def link = { data ->
-		City city = data.city
-		city.eachStreet { Street street, streetNumber ->
+		def city = data.city
+		city.eachStreet { street, streetNumber ->
 			def nextStreet = streetNumber + 1
 			def lastStreet = streetNumber - 1
 			if ( streetNumber == 0 ) {
-				street.eachCitizen { Citizen citizen, houseNumber ->
+				street.eachCitizen { citizen, houseNumber ->
 					def nextCitizen = houseNumber + 1
 					def lastCitizen = houseNumber - 1
 					if ( isTheFirstOfTheStreet(houseNumber) ) {
@@ -54,7 +53,7 @@ class GameOfLife {
 				}
 				
 			} else {
-				street.eachCitizen { Citizen citizen, houseNumber ->
+				street.eachCitizen { citizen, houseNumber ->
 					def nextCitizen = houseNumber + 1
 					def lastCitizen = houseNumber - 1
 					if ( isTheFirstOfTheStreet(houseNumber) ) {
@@ -94,7 +93,7 @@ class GameOfLife {
 	}
 	
 	def start = { data ->
-		0.upto(data.cicles) {
+		1.upto(data.cicles) {
 			def citizensToChange = []
 			data.city.eachStreet { street, streetNumber ->
 				street.eachCitizen { citizen, houseNumber ->
@@ -102,9 +101,9 @@ class GameOfLife {
 				}
 			}
 			
-			data.notify(data.city)
+			if ( data.notify ) data.notify(data.city)
 			citizensToChange.each { it.liveOrDie() }
-			sleep(data.delay)
+			sleep(data.delay ?: 100)
 		}
 		data
 	}
@@ -123,13 +122,6 @@ class GameOfLife {
 	
 	def isTheLastOfTheStreet(Integer houseNumber, Street street) {
 		houseNumber == street.citizens.size() -1
-	}
-	
-	def bootstrap = { data ->
-		data.points.each { point ->
-			data.city.street(point.y).citizen(point.x).live()
-		}
-		data
 	}
 
 }
