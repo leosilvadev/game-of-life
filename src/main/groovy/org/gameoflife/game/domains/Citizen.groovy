@@ -38,8 +38,7 @@ class Citizen {
 		this
 	}
 	
-	Boolean mustToggle(){
-		def toToggle = []
+	Boolean mustChange(){
 		def alives = neighbours.findAll { it.isAlive() }.size()
 		
 		if ( isAlive() && alives < 2 ) {
@@ -59,7 +58,7 @@ class Citizen {
 		}
 	}
 	
-	void toggleLife(){
+	void liveOrDie(){
 		this.alive = !isAlive() 
 	}
 	

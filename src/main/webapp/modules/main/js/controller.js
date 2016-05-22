@@ -37,13 +37,13 @@
 
         var buildMap = function(){
             vm.points = [];
-            vm.rows = [];
+            vm.streets = [];
             for ( var y=0 ; y<vm.yAxis ; y++ ) {
-                var columns = [];
+                var citizens = [];
                 for ( var x=0 ; x<vm.xAxis ; x++ ) {
-                    columns.push({alive:false, dead:true, position:[y,x]});
+                    citizens.push({alive:false, dead:true, position:[y,x]});
                 }
-                vm.rows.push(columns);
+                vm.streets.push({citizens:citizens});
             }
         }
 
@@ -112,9 +112,9 @@
             return data;
         }
 
-        var updateRows = function(rows){
+        var updateCity = function(streets){
             $scope.$apply(function(){
-                vm.rows = rows;
+                vm.streets = streets;
             });
         }
 
@@ -126,7 +126,7 @@
         var start = function(){
             try {
                 var data = buildStartRequest();
-                gameoflife.start(data, updateRows, stop).catch(function(response){
+                gameoflife.start(data, updateCity, stop).catch(function(response){
                     message.warn('Error trying to start the Game, check the configuration and try again!')
                     stop();
                 });

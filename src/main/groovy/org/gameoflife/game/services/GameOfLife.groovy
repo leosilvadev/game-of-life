@@ -1,7 +1,9 @@
 package org.gameoflife.game.services
 
 import org.gameoflife.game.domains.Citizen
+import org.gameoflife.game.domains.City
 import org.gameoflife.game.domains.Game
+import org.gameoflife.game.domains.Street
 import org.gameoflife.game.flow.Flow
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
@@ -11,109 +13,78 @@ class GameOfLife {
 	
 	@Async
 	void start(Game game, Closure notify, Closure finish){
-		Citizen[][] map = new Citizen[game.config.y][game.config.x] 
+		City city = new City(game.config.y, game.config.x) 
 		
-		def recoveryFn = { ex -> finish() }
-		def inputData = [map:map, points:game.initialPoints, cicles:game.cicles, delay:game.delay, notify:notify]
+		def recoveryFn = { ex -> 
+			ex.printStackTrace()
+			finish()
+		}
+		def inputData = [city:city, points:game.initialPoints, cicles:game.cicles, delay:game.delay, notify:notify]
 		
-		Flow.waterfall([init, linkCitizens, bootstrap, startGame, finish], recoveryFn, inputData)
+		Flow.waterfall([link, bootstrap, start, finish], recoveryFn, inputData)
 	}
 	
-	def init = { data ->
-		data.map.eachWithIndex { item, indexX ->
-			item.eachWithIndex { citizen, indexY ->
-				item[indexY] = new Citizen(indexX, indexY)
-			}
-		}
-		data
-	}
-	
-	def startGame = { data ->
-		0.upto(data.cicles) {
-			def toToggle = []
-			for ( int rowIndex = 0 ; rowIndex < data.map.size() ; rowIndex++ ) {
-				def row = data.map[rowIndex]
-				for ( int colIndex = 0 ; colIndex < row.size() ; colIndex++ ) {
-					def citizen = row[colIndex]
-					if ( citizen.mustToggle() ) {
-						toToggle << citizen
-					}
-				}
-			}
-			data.notify(data.map)
-			toToggle.each { Citizen citizen -> citizen.toggleLife() }
-			sleep(data.delay)
-		}
-		data
-	}
-	
-	def isFirstColumn(column) {
-		column==0
-	}
-	
-	def isNeitherFirstOrLastColumn(column, citizens) {
-		column < citizens.size() -1
-	}
-	
-	def isLastColumn(column, citizens) {
-		column == citizens.size() -1
-	}
-	
-	def linkCitizens = { data ->
-		def map = data.map
-		map.eachWithIndex { citizens, row ->
-			if ( row == 0 ) {
-				citizens.eachWithIndex { Citizen citizen, column ->
-					if ( isFirstColumn(column) ) {
-						citizen.addNeighbour(citizens[column+1])
-						citizen.addNeighbour(map[row+1][column])
-						citizen.addNeighbour(map[row+1][column+1])
+	def link = { data ->
+		City city = data.city
+		city.eachStreet { Street street, streetNumber ->
+			def nextStreet = streetNumber + 1
+			def lastStreet = streetNumber - 1
+			if ( streetNumber == 0 ) {
+				street.eachCitizen { Citizen citizen, houseNumber ->
+					def nextCitizen = houseNumber + 1
+					def lastCitizen = houseNumber - 1
+					if ( isTheFirstOfTheStreet(houseNumber) ) {
+						citizen.addNeighbour(city.street(nextStreet).citizen(nextCitizen))
+						citizen.addNeighbour(city.street(nextStreet).citizen(houseNumber))
+						citizen.addNeighbour(city.street(nextStreet).citizen(nextCitizen))
 						
-					} else if ( isNeitherFirstOrLastColumn(column, citizens) ) {
-						citizen.addNeighbour(citizens[column-1])
-						citizen.addNeighbour(citizens[column+1])
-						citizen.addNeighbour(map[row+1][column])
-						citizen.addNeighbour(map[row+1][column+1])
-						citizen.addNeighbour(map[row+1][column-1])
+					} else if ( isNeitherFirstOrLastColumn(houseNumber, street) ) {
+						citizen.addNeighbour(street.citizen(lastCitizen))
+						citizen.addNeighbour(street.citizen(nextCitizen))
+						citizen.addNeighbour(city.street(nextStreet).citizen(houseNumber))
+						citizen.addNeighbour(city.street(nextStreet).citizen(nextCitizen))
+						citizen.addNeighbour(city.street(nextStreet).citizen(lastCitizen))
 						
-					} else if ( isLastColumn(column, citizens) ) {
-						citizen.addNeighbour(citizens[column-1])
-						citizen.addNeighbour(map[row+1][column])
-						citizen.addNeighbour(map[row+1][column-1])
+					} else if ( isTheLastOfTheStreet(houseNumber, street) ) {
+						citizen.addNeighbour(street.citizen(lastCitizen))
+						citizen.addNeighbour(city.street(nextStreet).citizen(houseNumber))
+						citizen.addNeighbour(city.street(nextStreet).citizen(lastCitizen))
 						
 					}
 				}
 				
 			} else {
-				citizens.eachWithIndex { Citizen citizen, column ->
-					if ( isFirstColumn(column) ) {
-						citizen.addNeighbour(citizens[column+1])
-						citizen.addNeighbour(map[row-1][column])
-						citizen.addNeighbour(map[row-1][column+1])
-						if ( row < map.size()-1 ) {
-							citizen.addNeighbour(map[row+1][column])
-							citizen.addNeighbour(map[row+1][column+1])
+				street.eachCitizen { Citizen citizen, houseNumber ->
+					def nextCitizen = houseNumber + 1
+					def lastCitizen = houseNumber - 1
+					if ( isTheFirstOfTheStreet(houseNumber) ) {
+						citizen.addNeighbour(street.citizen(nextCitizen))
+						citizen.addNeighbour(city.street(lastStreet).citizen(houseNumber))
+						citizen.addNeighbour(city.street(lastStreet).citizen(nextCitizen))
+						if ( isNotTheLastOfTheCity(streetNumber, city.streets) ) {
+							citizen.addNeighbour(city.street(nextStreet).citizen(houseNumber))
+							citizen.addNeighbour(city.street(nextStreet).citizen(nextCitizen))
 						}
 						
-					} else if ( isNeitherFirstOrLastColumn(column, citizens) ) {
-						citizen.addNeighbour(citizens[column-1])
-						citizen.addNeighbour(citizens[column+1])
-						citizen.addNeighbour(map[row-1][column])
-						citizen.addNeighbour(map[row-1][column+1])
-						citizen.addNeighbour(map[row-1][column-1])
-						if ( row < map.size()-1 ) {
-							citizen.addNeighbour(map[row+1][column])
-							citizen.addNeighbour(map[row+1][column+1])
-							citizen.addNeighbour(map[row+1][column-1])
+					} else if ( isNeitherFirstOrLastColumn(houseNumber, street) ) {
+						citizen.addNeighbour(street.citizen(lastCitizen))
+						citizen.addNeighbour(street.citizen(nextCitizen))
+						citizen.addNeighbour(city.street(lastStreet).citizen(houseNumber))
+						citizen.addNeighbour(city.street(lastStreet).citizen(nextCitizen))
+						citizen.addNeighbour(city.street(lastStreet).citizen(lastCitizen))
+						if ( isNotTheLastOfTheCity(streetNumber, city.streets) ) {
+							citizen.addNeighbour(city.street(nextStreet).citizen(houseNumber))
+							citizen.addNeighbour(city.street(nextStreet).citizen(nextCitizen))
+							citizen.addNeighbour(city.street(nextStreet).citizen(lastCitizen))
 						}
 						
-					} else if ( isLastColumn(column, citizens) ) {
-						citizen.addNeighbour(citizens[column-1])
-						citizen.addNeighbour(map[row-1][column])
-						citizen.addNeighbour(map[row-1][column-1])
-						if ( row < map.size()-1 ) {
-							citizen.addNeighbour(map[row+1][column])
-							citizen.addNeighbour(map[row+1][column-1])
+					} else if ( isTheLastOfTheStreet(houseNumber, street) ) {
+						citizen.addNeighbour(street.citizen(lastCitizen))
+						citizen.addNeighbour(city.street(lastStreet).citizen(houseNumber))
+						citizen.addNeighbour(city.street(lastStreet).citizen(lastCitizen))
+						if ( isNotTheLastOfTheCity(streetNumber, city.streets) ) {
+							citizen.addNeighbour(city.street(nextStreet).citizen(houseNumber))
+							citizen.addNeighbour(city.street(nextStreet).citizen(lastCitizen))
 						}
 					}
 				}
@@ -122,10 +93,41 @@ class GameOfLife {
 		data
 	}
 	
+	def start = { data ->
+		0.upto(data.cicles) {
+			def citizensToChange = []
+			data.city.eachStreet { street, streetNumber ->
+				street.eachCitizen { citizen, houseNumber ->
+					if ( citizen.mustChange() ) citizensToChange << citizen 
+				}
+			}
+			
+			data.notify(data.city)
+			citizensToChange.each { it.liveOrDie() }
+			sleep(data.delay)
+		}
+		data
+	}
+	
+	def isNotTheLastOfTheCity(streetNumber, streets){
+		streetNumber < streets.size()-1
+	}
+	
+	def isTheFirstOfTheStreet(houseNumber) {
+		houseNumber==0
+	}
+	
+	def isNeitherFirstOrLastColumn(Integer houseNumber, Street street) {
+		houseNumber < street.citizens.size() -1
+	}
+	
+	def isTheLastOfTheStreet(Integer houseNumber, Street street) {
+		houseNumber == street.citizens.size() -1
+	}
+	
 	def bootstrap = { data ->
 		data.points.each { point ->
-			def citizen = data.map[point.y][point.x]
-			citizen.live()
+			data.city.street(point.y).citizen(point.x).live()
 		}
 		data
 	}

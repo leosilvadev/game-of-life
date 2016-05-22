@@ -63,10 +63,10 @@
             </div>
             <div >
                 <table align="center" ng-mousedown="vm.startMultSelect()" ng-mouseup="vm.stopMultSelect()">
-                    <tr ng-repeat="row in vm.rows track by $index">
-                        <td ng-repeat="column in row track by $index">
-                            <div class="citizen" ng-class="{alive: column.alive, dead: !column.alive}"
-                                ng-click="vm.point(column)" ng-mouseover="vm.multSelect(column)">
+                    <tr ng-repeat="street in vm.streets track by $index">
+                        <td ng-repeat="citizen in street.citizens track by $index">
+                            <div class="citizen" ng-class="{alive: citizen.alive, dead: !citizen.alive}"
+                                ng-click="vm.point(citizen)" ng-mouseover="vm.multSelect(citizen)">
                             </div>
                         </td>
                     </tr>
