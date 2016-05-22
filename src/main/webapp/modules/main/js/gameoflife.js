@@ -13,7 +13,7 @@
                         var queue = '/queue/playing-'+gameToken;
                         subscription = gameClient.stomp.subscribe(queue, function(data){
                             if ( data.status == 'RUNNING' ) {
-                                onMessage(data.rows);
+                                onMessage(data.streets);
                             } else {
                                 onFinish();
                             }
