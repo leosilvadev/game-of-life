@@ -33,19 +33,5 @@ class Flow {
 	static def waterfall(List<Closure> fns, Closure recoveryFn=null, data=null){
 		new Flow().start(fns, recoveryFn, data)
 	}
-	
-	static main(args){
-		Flow.waterfall([{
-			1
-		}, {
-			it + 1
-			
-		}, {
-			println it
-			
-		}], { ex ->
-			println ex
-		})
-	}
 
 }
