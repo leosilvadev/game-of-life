@@ -2,7 +2,7 @@ package org.gameoflife.game.domains
 
 import spock.lang.Specification
 
-class CitizenSpec extends Specification {
+class CitizenUnitSpec extends Specification {
 	
 	def "A dead citizen that has 3 neighbours alive must live"(){
 		given:
@@ -21,10 +21,10 @@ class CitizenSpec extends Specification {
 			def citizen = new Citizen(1, 1, false, neighbours)
 			
 		when:
-			def toggle = citizen.mustToggle()
+			def alive = citizen.mustChange()
 			
 		then:
-			toggle
+			alive
 	}
 	
 	def "An alive citizen that has 2 neighbours alive must live"(){
@@ -44,10 +44,10 @@ class CitizenSpec extends Specification {
 			def citizen = new Citizen(1, 1, true, neighbours)
 			
 		when:
-			def toggle = citizen.mustToggle()
+			def die = citizen.mustChange()
 			
 		then:
-			!toggle
+			!die
 	}
 	
 	def "An alive citizen that has more than 3 neighbours alive must die"(){
@@ -67,10 +67,10 @@ class CitizenSpec extends Specification {
 			def citizen = new Citizen(1, 1, true, neighbours)
 			
 		when:
-			def toggle = citizen.mustToggle()
+			def alive = citizen.mustChange()
 			
 		then:
-			!toggle
+			!alive
 	}
 	
 	def "An alive citizen that has less than 2 neighbours alive must die"(){
@@ -90,10 +90,10 @@ class CitizenSpec extends Specification {
 			def citizen = new Citizen(1, 1, true, neighbours)
 			
 		when:
-			def toggle = citizen.mustToggle()
+			def die = citizen.mustChange()
 			
 		then:
-			toggle
+			die
 	}
 
 }
