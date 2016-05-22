@@ -5,6 +5,14 @@ Built with love using Spring Boot, SockJS, Groovy, Gradle and tested by Spock.
 ### Where ?
 https://leosilvadev-gameoflife.herokuapp.com/
 
+## What about the tecnologies?
+**Backend**: Spring Boot, MVC, Messaging, SockJS, Gradle
+
+**Tests**: Spring Test, Spock, Geb
+
+**Frontend**: Bootstrap, AngularJS
+
+
 
 ## What if you want to clone and run locally?
 
