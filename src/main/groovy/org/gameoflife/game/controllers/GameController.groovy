@@ -2,7 +2,7 @@ package org.gameoflife.game.controllers
 
 import javax.validation.Valid
 
-import org.gameoflife.game.domains.Citizen;
+import org.gameoflife.game.domains.City
 import org.gameoflife.game.domains.Game
 import org.gameoflife.game.enums.GameStatus
 import org.gameoflife.game.services.GameOfLife
@@ -24,9 +24,9 @@ class GameController {
 	def start(@Valid @RequestBody Game game){
 		def token = UUID.randomUUID().toString()
 		
-		def onUpdate = { Citizen[][] rows ->
+		def onUpdate = { City city ->
 			def data = [
-				rows: rows.collect(Arrays.&asList), 
+				streets: city.streets, 
 				status: GameStatus.RUNNING
 			]
 			
