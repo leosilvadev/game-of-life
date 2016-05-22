@@ -17,7 +17,7 @@ class Game {
 	Coordinates config
 	
 	@NotNull @NotEmpty
-	List<Coordinates> initialPoints
+	List<Coordinates> firstCitizens
 	
 	static class Coordinates {
 		
@@ -26,7 +26,7 @@ class Game {
 		
 		@NotNull @Min(0l)
 		Integer y
-		
+				
 	}
 
 }

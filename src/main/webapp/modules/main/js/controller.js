@@ -71,7 +71,7 @@
             });
         }
 
-        var getInitialPoints = function(){
+        var getFirstCitizens = function(){
             if ( !vm.points ) {
                 throw new Error('You must specify the start points');
             }
@@ -80,12 +80,12 @@
                 throw new Error('You must specify at least three points');
             }
 
-            var initialPoints = vm.points.map(function(point){
+            var firstCitizens = vm.points.map(function(point){
                 var point = point.text.split('-');
                 return {y:point[0], x:point[1] }
             });
 
-            initialPoints.forEach(function(initialPoint){
+            firstCitizens.forEach(function(initialPoint){
                 if ( !initialPoint.y || !initialPoint.x ) {
                     throw new Error('Invalid Points');
                 }
@@ -93,18 +93,18 @@
                     throw new Error('Start Points must be betwen the specified Y-X range');
                 }
             });
-            return initialPoints;
+            return firstCitizens;
         }
 
         var buildStartRequest = function(){
-            var initialPoints = getInitialPoints();
+            var firstCitizens = getFirstCitizens();
 
             var config = {
                 x: vm.xAxis,
                 y: vm.yAxis
             };
             var data = {
-                initialPoints: initialPoints,
+                firstCitizens: firstCitizens,
                 config: config,
                 cicles: vm.cicles,
                 delay: vm.delay
