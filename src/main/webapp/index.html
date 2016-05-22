@@ -14,32 +14,32 @@
                 <div class="row">
                     <div class="col-sm-8">
                         <label for="points">Pointers:</label>
-                        <span class="tip">Specify the pointer in pattern: y,x-y,x-y,x-y,x...</span>
+                        <span class="tip">specify the pointer in pattern: y,x-y,x-y,x-y,x...</span>
                         <tags-input id="firstCitizens" ng-model="vm.points" placeholder="Insert a y-x point"
                             allowed-tags-pattern="\d-\d" ng-disabled="vm.started"></tags-input>
                     </div>
                     <div class="col-sm-2">
                         <label for="yAxis">Y axis:</label>
-                        <span class="tip">Max of Y</span>
+                        <span class="tip">max of Y</span>
                         <input id="yAxis" ng-model="vm.yAxis" ng-disabled="vm.started"
                             ng-change="vm.buildMap()" type="number" class="form-control">
                     </div>
 
                     <div class="col-sm-2">
                         <label for="xAxis">X axis:</label>
-                        <span class="tip">Max of X</span>
+                        <span class="tip">max of X</span>
                         <input id="xAxis" ng-model="vm.xAxis" ng-disabled="vm.started"
                             ng-change="vm.buildMap()" type="number" class="form-control">
                     </div>
                     <div class="col-sm-2">
                         <label for="cicles">Cicles:</label>
-                        <span class="tip">How many times?</span>
+                        <span class="tip">how many?</span>
                         <input id="cicles" ng-model="vm.cicles" ng-disabled="vm.started"
                             type="number" class="form-control">
                     </div>
                     <div class="col-sm-2">
                         <label for="delay">Delay:</label>
-                        <span class="tip">In milliseconds</span>
+                        <span class="tip">milliseconds</span>
                         <input id="delay" ng-model="vm.delay" ng-disabled="vm.started"
                             type="number" class="form-control">
                     </div>
@@ -50,7 +50,7 @@
                         </button>
                     </div>
                     <div class="col-sm-2 buttons-container" ng-hide="vm.started">
-                        <button ng-click="vm.start()" class="btn btn-primary">
+                        <button id="btn-game-start" ng-click="vm.start()" class="btn btn-primary">
                             <span class="fui-play"></span> Start
                         </button>
                     </div>
@@ -65,8 +65,12 @@
                 <table align="center" ng-mousedown="vm.startMultSelect()" ng-mouseup="vm.stopMultSelect()">
                     <tr ng-repeat="street in vm.streets track by $index">
                         <td ng-repeat="citizen in street.citizens track by $index">
-                            <div class="citizen" ng-class="{alive: citizen.alive, dead: !citizen.alive}"
-                                ng-click="vm.point(citizen)" ng-mouseover="vm.multSelect(citizen)">
+                            <div class="citizen"
+                                data-alive="{{citizen.alive}}"
+                                id="citizen-{{citizen.position[0]}}-{{citizen.position[1]}}"
+                                ng-class="{alive: citizen.alive, dead: !citizen.alive}"
+                                ng-click="vm.point(citizen)"
+                                ng-mouseover="vm.multSelect(citizen)">
                             </div>
                         </td>
                     </tr>

@@ -2,7 +2,7 @@ package org.gameoflife.game.flow
 
 import spock.lang.Specification
 
-class WaterfallSpec extends Specification {
+class WaterfallUnitSpec extends Specification {
 	
 	def "Should run all the waterfall steps when has no exception"(){
 		given:
