@@ -5,3 +5,4 @@ jdk:
 
 after_success:
 - ./gradlew jacocoTestReport coveralls
+
