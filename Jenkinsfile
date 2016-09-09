@@ -9,5 +9,6 @@ node {
    sh "chmod u+x gradlew"
    sh "./gradlew clean build"
 
+   stage 'Done'
    setGitHubPullRequestStatus context: 'Done!', message: 'Wow! Everything worked great!', state: 'SUCCESS'
 }
