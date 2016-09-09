@@ -1,6 +1,5 @@
 node {
    stage 'Checkout'
-   userRemoteConfigs: [[url: 'https://github.com/leosilvadev/game-of-life']]])
    git url: 'https://github.com/leosilvadev/game-of-life'
    setGitHubPullRequestStatus context: 'Starting', message: 'Let\'s go, it\'s time to start our build!', state: 'PENDING'
 
