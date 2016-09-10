@@ -1,5 +1,5 @@
 node {
-   git(url: 'https://github.com/leosilvadev/game-of-life', branch: "'${env.BRANCH_NAME}'")
+   git(url: 'https://github.com/leosilvadev/game-of-life')
 
    step([$class: 'GitHubCommitStatusSetter',
       contextSource: [$class: 'ManuallyEnteredCommitContextSource', context: 'Checkout'],
