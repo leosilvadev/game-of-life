@@ -1,11 +1,11 @@
 node {
-   userRemoteConfigs: [[url: 'https://github.com/leosilvadev/game-of-life.git']]])
+   step([$class: 'GitHubCommitStatusSetter',
+      contextSource: [$class: 'ManuallyEnteredCommitContextSource', context: 'Checkout'],
+      statusResultSource: [$class: 'ConditionalStatusResultSource',
+      results: [[$class: 'AnyBuildResult', message: 'Project was checked out', state: 'SUCCESS']]]])
 
    stage 'Build'
-   setGitHubPullRequestStatus context: 'Building', message: 'Build the whole stuff!', state: 'PENDING'
    sh "chmod u+x gradlew"
    sh "./gradlew clean build"
 
-   stage 'Done'
-   setGitHubPullRequestStatus context: 'Done!', message: 'Wow! Everything worked great!', state: 'SUCCESS'
 }
