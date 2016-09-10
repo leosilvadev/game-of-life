@@ -1,4 +1,6 @@
 node {
+   userRemoteConfigs: [[url: 'https://github.com/leosilvadev/game-of-life.git']]])
+
    stage 'Build'
    setGitHubPullRequestStatus context: 'Building', message: 'Build the whole stuff!', state: 'PENDING'
    sh "chmod u+x gradlew"
